@@ -7,8 +7,13 @@ Promise.prototype.then = function (success) {
 	var that = this;
 	return new Promise(function (nextSuccess) {
 		that.success = function () {
-			var next = success.apply(this, arguments);
-			if (next) next.then(nextSuccess);
+			if (success) {
+				var next = success.apply(this, arguments);
+				if (next && next.then) next.then(nextSuccess);
+				else nextSuccess(next);
+			} else {
+				nextSuccess.apply(this, arguments);
+			}
 		};
 	});
 };
